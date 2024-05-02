@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "simple-serial-protocol"
+version = "0.1.0"
+description = "General Purpose Library for the communication between Python applications and Arduino devices. Powered by the usage of resource-efficient and microcontroller-friendly Primitive Dataypes."
+authors = ["Albrecht Nitsche <albrechtnitsche@gmail.com>", "Jens Kabisch <jenskabi@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "examples", from = "src" },
+    { include = "simple-serial-protocol", from = "src" },
+]
+repository = 'https://github.com/yesbotics/simple-serial-protocol-python'
+homepage = 'https://github.com/yesbotics/simple-serial-protocol-python'
+keywords = ["Simple Serial Protocol", "Arduino", "ESP32", "Mikrocontroller", "Robotics"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+
+pyserial = { version = "^3.5", optional = true }
+pyside6 = { version = "^6.7.0", optional = true }
+
+[tool.poetry.extras]
+serialport = ["pyserial", "pyside6"]
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+pytest-mock = "^3.11.1"
+
+[tool.poetry.scripts]
+simple-serial-protocol-controller = 'examples.example:main'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
