@@ -1,4 +1,5 @@
 import sys
+import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
@@ -26,7 +27,13 @@ def main():
     )
     args_parsed: Namespace = arg_parser.parse_args()
 
+    print('starte')
     arduino: SimpleSerialProtocol = SimpleSerialProtocol(args_parsed.portname, args_parsed.baudrate)
+    arduino.registerCommand()
+    arduino.init()
+    time.sleep(3)
+    arduino.dispose()
+    print('stoppe')
 
 
 if __name__ == '__main__':

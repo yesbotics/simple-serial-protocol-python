@@ -1,4 +1,4 @@
-from simple_serial_protocol.serial_port.AbstractSerialPort import AbstractSerialPort
+from simple_serial_protocol.AbstractSerialPort import AbstractSerialPort
 
 
 class PySide6SerialPort(AbstractSerialPort):
