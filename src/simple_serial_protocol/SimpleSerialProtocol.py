@@ -14,6 +14,7 @@ from simple_serial_protocol.param_type.ParamType import ParamType
 from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
 from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
 from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
+from simple_serial_protocol.param_type.ParamTypeFloat import ParamTypeFloat
 from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
 from simple_serial_protocol.param_type.ParamTypeInt32 import ParamTypeInt32
 from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
@@ -129,7 +130,7 @@ class SimpleSerialProtocol:
         self.__add_param_type(ParamTypeBoolean.NAME, ParamTypeBoolean)
         self.__add_param_type(ParamTypeChar.NAME, ParamTypeChar)
         # self.__add_param_type(ParamTypeString.NAME, ParamTypeString)
-        # self.__add_param_type(ParamTypeFloat.NAME, ParamTypeFloat)
+        self.__add_param_type(ParamTypeFloat.NAME, ParamTypeFloat)
         self.__add_param_type(ParamTypeInt8.NAME, ParamTypeInt8)
         self.__add_param_type(ParamTypeInt16.NAME, ParamTypeInt16)
         self.__add_param_type(ParamTypeInt32.NAME, ParamTypeInt32)
