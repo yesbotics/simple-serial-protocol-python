@@ -13,6 +13,7 @@ from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
 from simple_serial_protocol.param_type.ParamTypeInt8 import ParamTypeInt8
 from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
 from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
+from simple_serial_protocol.param_type.ParamTypeString import ParamTypeString
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt16 import ParamTypeUnsignedInt16
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt32 import ParamTypeUnsignedInt32
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt64 import ParamTypeUnsignedInt64
@@ -41,6 +42,9 @@ class Example:
                 ParamTypeUnsignedInt64.NAME,
                 ParamTypeFloat.NAME,
                 ParamTypeChar.NAME,
+                ParamTypeString.NAME,
+                ParamTypeString.NAME,
+                ParamTypeString.NAME,
             ]
         )
         self.arduino.init()
@@ -59,6 +63,9 @@ class Example:
                 CommandParam(type=ParamTypeUnsignedInt64.NAME, value=7294967295000999),
                 CommandParam(type=ParamTypeFloat.NAME, value=-1.23456789101112),
                 CommandParam(type=ParamTypeChar.NAME, value='J'),
+                CommandParam(type=ParamTypeString.NAME, value="text1: Hey, I'm text one!"),
+                CommandParam(type=ParamTypeString.NAME, value="text2: And I am his brother text two!"),
+                CommandParam(type=ParamTypeString.NAME, value="text3: Nice!"),
             ]
         )
         while self.is_running:
@@ -79,6 +86,9 @@ class Example:
             uint64Value: int,
             floatValue: float,
             charValue: str,
+            stringValue1: str,
+            stringValue2: str,
+            stringValue3: str,
     ):
         print('Received several values from Arduino:')
         print('byte_value', byte_value)
@@ -93,6 +103,9 @@ class Example:
         print('uint64Value', uint64Value)
         print('floatValue', floatValue)
         print('charValue', charValue)
+        print('stringValue1', stringValue1)
+        print('stringValue2', stringValue2)
+        print('stringValue3', stringValue3)
 
         self.is_running = False
 
