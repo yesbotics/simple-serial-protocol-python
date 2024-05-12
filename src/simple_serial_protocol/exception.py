@@ -12,46 +12,43 @@ class CommandAlreadyRegisteredException(SimpleSerialException):
         super().__init__('ERROR_COMMAND_IS_ALREADY_REGISTERED')
 
 
-class CommandIsNotRegisteredexception(SimpleSerialException):
-    def __init__(self) -> None:
-        super().__init__('ERROR_COMMAND_IS_NOT_REGISTERED')
+class CommandIsNotRegisteredException(SimpleSerialException):
+    def __init__(self, command: str) -> None:
+        super().__init__(f'ERROR_COMMAND_IS_NOT_REGISTERED: {command}')
 
 
-class IsNotEotexception(SimpleSerialException):
+class IsNotEotException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('ERROR_IS_NOT_EOT')
 
 
-class EotWasNotReadexception(SimpleSerialException):
+class EotWasNotReadException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('ERROR_EOT_WAS_NOT_READ')
 
 
-class ParamTypeUnknownexception(SimpleSerialException):
+class ParamTypeUnknownException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('ERROR_PARAM_TYPE_UNKNOWN')
 
 
-class Unknownexception(SimpleSerialException):
+class UnknownException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('UNKNOWN')
 
 
-class WrongCommandNameLengthexception(SimpleSerialException):
+class WrongCommandNameLengthException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('ERROR_WRONG_COMMAND_NAME_LENGTH')
 
 
-class ParamTypeIsAlreadyRegisteredexception(SimpleSerialException):
+class ParamTypeIsAlreadyRegisteredException(SimpleSerialException):
     def __init__(self) -> None:
         super().__init__('ERROR_PARAM_TYPE_IS_ALREADY_REGISTERED')
 
 
-class ParserTooManyBytesexception(SimpleSerialException):
+class ParserTooManyBytesException(SimpleSerialException):
     def __init__(self) -> None:
-        super().__init__('ERROR_PARSER_TOO_MANY_BYTES')
-
-
-class CallbackIsNullexception(SimpleSerialException):
-    def __init__(self) -> None:
-        super().__init__('ERROR_CALLBACK_IS_NULL')
+        super().__init__(
+            'ERROR_PARSER_TOO_MANY_BYTES, Tried to add byte to param parser but all types filled.'
+        )

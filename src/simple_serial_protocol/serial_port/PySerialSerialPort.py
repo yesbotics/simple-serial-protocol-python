@@ -3,7 +3,7 @@ from typing import Final
 from serial import Serial
 
 from simple_serial_protocol.Baudrate import Baudrate
-from simple_serial_protocol.AbstractSerialPort import AbstractSerialPort
+from simple_serial_protocol.serial_port.AbstractSerialPort import AbstractSerialPort
 from simple_serial_protocol.common import Byte
 
 
@@ -31,4 +31,8 @@ class PySerialSerialPort(AbstractSerialPort):
         return self.__serial_port.in_waiting
 
     def read(self) -> Byte:
-        return self.__serial_port.read()[0]
+        bites:bytes = self.__serial_port.read()
+        return bites[0]
+
+    def write(self, buffer: bytes) -> None:
+        self.__serial_port.write(buffer)
