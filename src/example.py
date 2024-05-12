@@ -6,10 +6,14 @@ from pathlib import Path
 from simple_serial_protocol import Baudrate, CommandParam, SimpleSerialProtocol
 from simple_serial_protocol.common import Byte
 from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
+from simple_serial_protocol.param_type.ParamTypeInt32 import ParamTypeInt32
+from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
 from simple_serial_protocol.param_type.ParamTypeInt8 import ParamTypeInt8
 from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
 from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt16 import ParamTypeUnsignedInt16
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt32 import ParamTypeUnsignedInt32
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt64 import ParamTypeUnsignedInt64
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt8 import ParamTypeUnsignedInt8
 
 
@@ -29,6 +33,10 @@ class Example:
                 ParamTypeUnsignedInt8.NAME,
                 ParamTypeInt16.NAME,
                 ParamTypeUnsignedInt16.NAME,
+                ParamTypeInt32.NAME,
+                ParamTypeUnsignedInt32.NAME,
+                ParamTypeInt64.NAME,
+                ParamTypeUnsignedInt64.NAME,
             ]
         )
         self.arduino.init()
@@ -41,6 +49,10 @@ class Example:
                 CommandParam(type=ParamTypeUnsignedInt8.NAME, value=255),
                 CommandParam(type=ParamTypeInt16.NAME, value=-32768),
                 CommandParam(type=ParamTypeUnsignedInt16.NAME, value=65523),
+                CommandParam(type=ParamTypeInt32.NAME, value=-2147483648),
+                CommandParam(type=ParamTypeUnsignedInt32.NAME, value=4294967295),
+                CommandParam(type=ParamTypeInt64.NAME, value=-2147483648000999),
+                CommandParam(type=ParamTypeUnsignedInt64.NAME, value=7294967295000999),
             ]
         )
         while self.is_running:
@@ -55,6 +67,10 @@ class Example:
             uint8Value: int,
             int16Value: int,
             uint16Value: int,
+            int32Value: int,
+            uint32Value: int,
+            int64Value: int,
+            uint64Value: int,
     ):
         print('Received several values from Arduino:')
         print('byte_value', byte_value)
@@ -63,6 +79,10 @@ class Example:
         print('uint8Value', uint8Value)
         print('int16Value', int16Value)
         print('uint16Value', uint16Value)
+        print('int32Value', int32Value)
+        print('uint32Value', uint32Value)
+        print('int64Value', int64Value)
+        print('uint64Value', uint64Value)
         self.is_running = False
 
 

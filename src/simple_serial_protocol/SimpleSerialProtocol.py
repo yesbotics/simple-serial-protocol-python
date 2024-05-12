@@ -5,22 +5,26 @@ from typing import Any, Final
 
 from simple_serial_protocol.Baudrate import Baudrate
 from simple_serial_protocol.ParamsParser import ParamsParser
-from simple_serial_protocol.param_type.ParamType import ParamType
-from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
-from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
-from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
-from simple_serial_protocol.param_type.ParamTypeInt8 import ParamTypeInt8
-from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
-from simple_serial_protocol.param_type.ParamTypeUnsignedInt16 import ParamTypeUnsignedInt16
-from simple_serial_protocol.param_type.ParamTypeUnsignedInt8 import ParamTypeUnsignedInt8
-from simple_serial_protocol.serial_port.AbstractSerialPort import AbstractSerialPort
-from simple_serial_protocol.serial_port.PySerialSerialPort import PySerialSerialPort
-from simple_serial_protocol.serial_port.PySide6SerialPort import PySide6SerialPort
 from simple_serial_protocol.RegisteredCommand import RegisteredCommand
 from simple_serial_protocol.common import Byte, CommandCallback
 from simple_serial_protocol.exception import CommandAlreadyRegisteredException, CommandIsNotRegisteredException, \
     EotWasNotReadException, ParamTypeIsAlreadyRegisteredException, \
     ParamTypeUnknownException
+from simple_serial_protocol.param_type.ParamType import ParamType
+from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
+from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
+from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
+from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
+from simple_serial_protocol.param_type.ParamTypeInt32 import ParamTypeInt32
+from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
+from simple_serial_protocol.param_type.ParamTypeInt8 import ParamTypeInt8
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt16 import ParamTypeUnsignedInt16
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt32 import ParamTypeUnsignedInt32
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt64 import ParamTypeUnsignedInt64
+from simple_serial_protocol.param_type.ParamTypeUnsignedInt8 import ParamTypeUnsignedInt8
+from simple_serial_protocol.serial_port.AbstractSerialPort import AbstractSerialPort
+from simple_serial_protocol.serial_port.PySerialSerialPort import PySerialSerialPort
+from simple_serial_protocol.serial_port.PySide6SerialPort import PySide6SerialPort
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,12 +132,12 @@ class SimpleSerialProtocol:
         # self.__add_param_type(ParamTypeFloat.NAME, ParamTypeFloat)
         self.__add_param_type(ParamTypeInt8.NAME, ParamTypeInt8)
         self.__add_param_type(ParamTypeInt16.NAME, ParamTypeInt16)
-        # self.__add_param_type(ParamTypeInt32.NAME, ParamTypeInt32)
-        # self.__add_param_type(ParamTypeInt64.NAME, ParamTypeInt64)
+        self.__add_param_type(ParamTypeInt32.NAME, ParamTypeInt32)
+        self.__add_param_type(ParamTypeInt64.NAME, ParamTypeInt64)
         self.__add_param_type(ParamTypeUnsignedInt8.NAME, ParamTypeUnsignedInt8)
         self.__add_param_type(ParamTypeUnsignedInt16.NAME, ParamTypeUnsignedInt16)
-        # self.__add_param_type(ParamTypeUnsignedInt32.NAME, ParamTypeUnsignedInt32)
-        # self.__add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
+        self.__add_param_type(ParamTypeUnsignedInt32.NAME, ParamTypeUnsignedInt32)
+        self.__add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
 
     def __on_data(self, byte: Byte) -> None:
         if self.__current_command is not None:
