@@ -43,13 +43,13 @@ class SimpleSerialProtocol:
             baudrate: Baudrate,
     ) -> AbstractSerialPort:
         try:
-            import serial
-            return PySerialSerialPort(portname, baudrate)
+            import PySide6
+            return PySide6SerialPort(portname, baudrate)
         except ImportError:
             pass
         try:
-            import PySide6
-            return PySide6SerialPort(portname, baudrate)
+            import serial
+            return PySerialSerialPort(portname, baudrate)
         except ImportError:
             pass
         raise RuntimeError('No serial port library like pyserial could be found')
