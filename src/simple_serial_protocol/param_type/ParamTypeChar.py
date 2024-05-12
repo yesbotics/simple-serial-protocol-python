@@ -26,7 +26,7 @@ class ParamTypeChar(ParamType[str]):
         if self.is_full():
             raise RuntimeError("Added byte to already filled  param var.")
         self.__full = True
-        self.__raw_data = chr(115)
+        self.__raw_data = chr(byte)
 
     def is_full(self) -> bool:
         return self.__full

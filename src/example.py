@@ -5,6 +5,7 @@ from pathlib import Path
 
 from simple_serial_protocol import Baudrate, CommandParam, SimpleSerialProtocol
 from simple_serial_protocol.common import Byte
+from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
 from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
 from simple_serial_protocol.param_type.ParamTypeInt32 import ParamTypeInt32
 from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
@@ -37,6 +38,7 @@ class Example:
                 ParamTypeUnsignedInt32.NAME,
                 ParamTypeInt64.NAME,
                 ParamTypeUnsignedInt64.NAME,
+                ParamTypeChar.NAME,
             ]
         )
         self.arduino.init()
@@ -53,6 +55,7 @@ class Example:
                 CommandParam(type=ParamTypeUnsignedInt32.NAME, value=4294967295),
                 CommandParam(type=ParamTypeInt64.NAME, value=-2147483648000999),
                 CommandParam(type=ParamTypeUnsignedInt64.NAME, value=7294967295000999),
+                CommandParam(type=ParamTypeChar.NAME, value='J'),
             ]
         )
         while self.is_running:
@@ -71,6 +74,7 @@ class Example:
             uint32Value: int,
             int64Value: int,
             uint64Value: int,
+            charValue: str,
     ):
         print('Received several values from Arduino:')
         print('byte_value', byte_value)
@@ -83,6 +87,8 @@ class Example:
         print('uint32Value', uint32Value)
         print('int64Value', int64Value)
         print('uint64Value', uint64Value)
+        print('charValue', charValue)
+
         self.is_running = False
 
 
