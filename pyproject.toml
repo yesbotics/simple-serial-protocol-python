@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simple-serial-protocol"
-version = "0.1.0"
+version = "0.2.0"
 description = "General Purpose Library for the communication between Python applications and Arduino devices. Powered by the usage of resource-efficient and microcontroller-friendly Primitive Dataypes."
 authors = ["Albrecht Nitsche <albrechtnitsche@gmail.com>", "Jens Kabisch <jenskabi@gmail.com>"]
 license = "MIT"
@@ -23,8 +23,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
+pyserial = "^3.5"
 
-pyserial = { version = "^3.5", optional = true }
 pyside6 = { version = "^6.7.0", optional = true }
 
 [tool.poetry.extras]

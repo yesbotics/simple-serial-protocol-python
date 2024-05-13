@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from threading import Event, Thread
 from time import sleep
-from typing import Any, Final
+from typing import Any, Final, overload
 
 from simple_serial_protocol.Baudrate import Baudrate
 from simple_serial_protocol.ParamsParser import ParamsParser
@@ -37,36 +37,28 @@ class CommandParam:
 
 class SimpleSerialProtocol:
 
-    @staticmethod
-    def __create_serialport(
-            portname: str,
-            baudrate: Baudrate,
-    ) -> AbstractSerialPort:
-        try:
-            import PySide6
-            return PySide6SerialPort(portname, baudrate)
-        except ImportError:
-            pass
-        try:
-            import serial
-            return PySerialSerialPort(portname, baudrate)
-        except ImportError:
-            pass
-        raise RuntimeError('No serial port library like pyserial could be found')
-
     __CHAR_EOT: Final[Byte] = 0x0A  # End of Transmission - Line Feed Zeichen \n
 
+    @overload
     def __init__(self, portname: str, baudrate: Baudrate):
+        pass
+
+    @overload
+    def __init__(self, serial_port_instance: AbstractSerialPort):
+        pass
+
+    def __init__(self, portname_or_serial_port_instance: str | AbstractSerialPort, baudrate: Baudrate | None = None):
+        self.__serial_port: Final[AbstractSerialPort] = (
+            portname_or_serial_port_instance
+            if isinstance(portname_or_serial_port_instance, AbstractSerialPort)
+            else PySerialSerialPort(str(portname_or_serial_port_instance), baudrate)
+        )
         self.__listener_thread: Thread | None = None
         self.__stop_event: Event | None = None
         self.__registered_commands: Final[dict[str, RegisteredCommand]] = {}
         self.__current_command: RegisteredCommand | None = None
         self.__param_type_instances: Final[dict[str, ParamType[Any]]] = {}
         self.__init_param_types()
-        self.__serial_port: Final[AbstractSerialPort] = SimpleSerialProtocol.__create_serialport(
-            str(portname),
-            baudrate
-        )
 
     def init(self, initilizationDelay: float = 2.5):
         self.__serial_port.open()
