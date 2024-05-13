@@ -33,7 +33,7 @@ class PySide6SerialPort(AbstractSerialPort):
 
     def read(self) -> Byte:
         bites: bytes = self.__serial_port.read(1)
-        return bites[0]
+        return bites.data()[0]
 
     def write(self, buffer: bytes) -> None:
         self.__serial_port.write(buffer)
