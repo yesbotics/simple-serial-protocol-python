@@ -3,7 +3,7 @@ import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from simple_serial_protocol import Baudrate, CommandParam, SimpleSerialProtocol
+from simple_serial_protocol import Baudrate, CommandParam, PySerialSerialPort, SimpleSerialProtocol
 from simple_serial_protocol.common import Byte
 from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
 from simple_serial_protocol.param_type.ParamTypeFloat import ParamTypeFloat
@@ -22,7 +22,9 @@ from simple_serial_protocol.param_type.ParamTypeUnsignedInt8 import ParamTypeUns
 
 class Example:
     def __init__(self, portname: str, baudrate: Baudrate):
-        self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(portname, baudrate)
+        self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(portname,baudrate)
+        #  # or pass instance of an AbstractSerialPort implementation like PySerialSerialPort or PySide6SerialPort
+        self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(PySerialSerialPort(str(portname), baudrate))
         self.is_running: bool = True
 
     def run(self):
