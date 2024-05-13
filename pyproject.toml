@@ -6,7 +6,7 @@ authors = ["Albrecht Nitsche <albrechtnitsche@gmail.com>", "Jens Kabisch <jenska
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "simple-serial-protocol", from = "src" },
+#    { include = "simple-serial-protocol", from = "src" },
 ]
 repository = 'https://github.com/yesbotics/simple-serial-protocol-python'
 homepage = 'https://github.com/yesbotics/simple-serial-protocol-python'
