@@ -6,7 +6,6 @@ authors = ["Albrecht Nitsche <albrechtnitsche@gmail.com>", "Jens Kabisch <jenska
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "examples", from = "src" },
     { include = "simple-serial-protocol", from = "src" },
 ]
 repository = 'https://github.com/yesbotics/simple-serial-protocol-python'
@@ -35,7 +34,7 @@ pytest = "^7.4.0"
 pytest-mock = "^3.11.1"
 
 [tool.poetry.scripts]
-simple-serial-protocol-controller = 'examples.example:main'
+simple-serial-protocol-example = 'example:main'
 
 [build-system]
 requires = ["poetry-core"]
