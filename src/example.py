@@ -24,7 +24,7 @@ class Example:
     def __init__(self, portname: str, baudrate: Baudrate):
         self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(portname,baudrate)
         #  # or pass instance of an AbstractSerialPort implementation like PySerialSerialPort or PySide6SerialPort
-        self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(PySerialSerialPort(str(portname), baudrate))
+        # self.arduino: SimpleSerialProtocol = SimpleSerialProtocol(PySerialSerialPort(str(portname), baudrate))
         self.is_running: bool = True
 
     def run(self):
