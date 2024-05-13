@@ -60,6 +60,10 @@ class SimpleSerialProtocol:
         self.__param_type_instances: Final[dict[str, ParamType[Any]]] = {}
         self.__init_param_types()
 
+    @property
+    def is_open(self) -> bool:
+        return self.__serial_port.is_open
+
     def init(self, initilizationDelay: float = 2.5):
         self.__serial_port.open()
         sleep(initilizationDelay)
