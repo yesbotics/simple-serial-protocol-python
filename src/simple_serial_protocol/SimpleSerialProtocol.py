@@ -26,6 +26,7 @@ from simple_serial_protocol.param_type.ParamTypeUnsignedInt64 import ParamTypeUn
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt8 import ParamTypeUnsignedInt8
 from simple_serial_protocol.serial_port.AbstractSerialPort import AbstractSerialPort
 from simple_serial_protocol.serial_port.PySerialSerialPort import PySerialSerialPort
+from simple_serial_protocol.serial_port.PySide6SerialPort import PySide6SerialPort
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,6 +36,7 @@ class CommandParam:
 
 
 class SimpleSerialProtocol:
+
     __CHAR_EOT: Final[Byte] = 0x0A  # End of Transmission - Line Feed Zeichen \n
 
     @overload
@@ -62,14 +64,14 @@ class SimpleSerialProtocol:
     def is_open(self) -> bool:
         return self.__serial_port.is_open
 
-    def init(self, initilizationDelay: float = 2.5) -> None:
+    def init(self, initilizationDelay: float = 2.5):
         self.__serial_port.open()
         sleep(initilizationDelay)
         self.__stop_event = Event()
         self.__listener_thread = Thread(target=self.__serial_listener)
         self.__listener_thread.start()
 
-    def dispose(self) -> None:
+    def dispose(self):
         self.__stop_event.set()
         self.__listener_thread.join()
         self.__serial_port.close()
@@ -77,13 +79,13 @@ class SimpleSerialProtocol:
         self.__listener_thread = None
         self.__registered_commands.clear()
 
-    def register_command(self, command_id: str, callback: CommandCallback, paramTypes: list[str] = None):
+    def registerCommand(self, command_id: str, callback: CommandCallback, paramTypes: list[str] = None):
         if command_id in self.__registered_commands:
             raise CommandAlreadyRegisteredException
         registered_command: RegisteredCommand = RegisteredCommand(command_id, callback, paramTypes)
         self.__registered_commands[command_id] = registered_command
 
-    def unregister_command(self, command_id: str) -> None:
+    def unregisterCommand(self, command_id: str):
         if command_id in self.__registered_commands:
             command: RegisteredCommand = self.__registered_commands[command_id]
             command.dispose()
@@ -105,34 +107,13 @@ class SimpleSerialProtocol:
         )
         self.__write(eot_byte)
 
-    def request___xxx(
-            self,
-            command_id: str,
-            params: list[CommandParam],
-            callback: CommandCallback,
-            paramTypes: list[str]
-    ) -> None:
-        self.register_command(
-            command_id,
-            self.__on_request_response(command_id, callback),
-            paramTypes
-        )
-        self.write_command(
-            command_id,
-            params
-        )
-
-    def __on_request_response(self, command_id: str, callback: CommandCallback) -> CommandCallback:
-        self.unregister_command(command_id)
-        return callback
-
     def __add_param_type(self, name: str, clazz: any) -> None:
         if ParamsParser.has_type(name):
             raise ParamTypeIsAlreadyRegisteredException
         ParamsParser.add_type(name, clazz)
         self.__param_type_instances[name] = clazz()
 
-    def __serial_listener(self) -> None:
+    def __serial_listener(self):
         while not self.__stop_event.is_set():
             if self.__serial_port.available() > 0:
                 byte: Byte = self.__serial_port.read()

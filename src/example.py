@@ -1,17 +1,18 @@
+import sys
 import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from simple_serial_protocol import Baudrate, CommandParam, SimpleSerialProtocol
+from simple_serial_protocol import Baudrate, CommandParam, PySerialSerialPort, SimpleSerialProtocol
 from simple_serial_protocol.common import Byte
-from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
-from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
 from simple_serial_protocol.param_type.ParamTypeChar import ParamTypeChar
 from simple_serial_protocol.param_type.ParamTypeFloat import ParamTypeFloat
 from simple_serial_protocol.param_type.ParamTypeInt16 import ParamTypeInt16
 from simple_serial_protocol.param_type.ParamTypeInt32 import ParamTypeInt32
 from simple_serial_protocol.param_type.ParamTypeInt64 import ParamTypeInt64
 from simple_serial_protocol.param_type.ParamTypeInt8 import ParamTypeInt8
+from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
+from simple_serial_protocol.param_type.ParamTypeByte import ParamTypeByte
 from simple_serial_protocol.param_type.ParamTypeString import ParamTypeString
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt16 import ParamTypeUnsignedInt16
 from simple_serial_protocol.param_type.ParamTypeUnsignedInt32 import ParamTypeUnsignedInt32
@@ -27,7 +28,7 @@ class Example:
         self.is_running: bool = True
 
     def run(self):
-        self.arduino.register_command(
+        self.arduino.registerCommand(
             's',
             self.on_got_command,
             [
