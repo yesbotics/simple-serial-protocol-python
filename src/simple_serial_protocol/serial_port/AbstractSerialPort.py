@@ -35,3 +35,7 @@ class AbstractSerialPort(ABC):
     @abstractmethod
     def write(self, buffer: bytes) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def flush(self) -> None:
+        raise NotImplementedError

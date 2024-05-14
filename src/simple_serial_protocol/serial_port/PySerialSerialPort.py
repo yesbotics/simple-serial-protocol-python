@@ -36,3 +36,8 @@ class PySerialSerialPort(AbstractSerialPort):
 
     def write(self, buffer: bytes) -> None:
         self.__serial_port.write(buffer)
+
+    def flush(self) -> None:
+        self.__serial_port.flush()
+        self.__serial_port.reset_input_buffer()
+        self.__serial_port.reset_output_buffer()
