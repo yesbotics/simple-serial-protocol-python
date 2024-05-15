@@ -7,7 +7,9 @@ from simple_serial_protocol.Baudrate import Baudrate
 from simple_serial_protocol.ParamsParser import ParamsParser
 from simple_serial_protocol.RegisteredCommand import RegisteredCommand
 from simple_serial_protocol.common import Byte, CommandCallback
-from simple_serial_protocol.exception import CommandAlreadyRegisteredException, ParamTypeIsAlreadyRegisteredException, \
+from simple_serial_protocol.exception import CommandAlreadyRegisteredException, CommandIsNotRegisteredException, \
+    EotWasNotReadException, \
+    ParamTypeIsAlreadyRegisteredException, \
     ParamTypeUnknownException
 from simple_serial_protocol.param_type.ParamType import ParamType
 from simple_serial_protocol.param_type.ParamTypeBoolean import ParamTypeBoolean
@@ -142,23 +144,23 @@ class SimpleSerialProtocol:
         self.__add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
 
     def __on_data(self, byte: Byte) -> None:
-        print('__on_data', byte)
-        # if self.__current_command is not None:
-        #     # Got command already -> reading param data
-        #     if self.__current_command.params_read():
-        #         # Check EOT -> call callback
-        #         if byte == SimpleSerialProtocol.__CHAR_EOT:
-        #             self.__current_command.call_callback()
-        #             self.__current_command = None
-        #         else:
-        #             raise EotWasNotReadException
-        #     else:
-        #         self.__current_command.add_byte(byte)
-        # else:
-        #     command_name: str = chr(byte)
-        #     if command_name not in self.__registered_commands:
-        #         # Command not found
-        #         raise CommandIsNotRegisteredException(command_name)
-        #     # New command -> Preparing buffer for reading
-        #     self.__current_command = self.__registered_commands[command_name]
-        #     self.__current_command.reset_param_parser()
+        # print('__on_data', byte)
+        if self.__current_command is not None:
+            # Got command already -> reading param data
+            if self.__current_command.params_read():
+                # Check EOT -> call callback
+                if byte == SimpleSerialProtocol.__CHAR_EOT:
+                    self.__current_command.call_callback()
+                    self.__current_command = None
+                else:
+                    raise EotWasNotReadException
+            else:
+                self.__current_command.add_byte(byte)
+        else:
+            command_name: str = chr(byte)
+            if command_name not in self.__registered_commands:
+                # Command not found
+                raise CommandIsNotRegisteredException(command_name)
+            # New command -> Preparing buffer for reading
+            self.__current_command = self.__registered_commands[command_name]
+            self.__current_command.reset_param_parser()
