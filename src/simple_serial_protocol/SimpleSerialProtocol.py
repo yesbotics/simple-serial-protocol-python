@@ -82,17 +82,21 @@ class SimpleSerialProtocol:
         self.__listener_thread = None
         self.__registered_commands.clear()
 
-    def registerCommand(self, command_id: str, callback: CommandCallback, paramTypes: list[str] = None):
-        if command_id in self.__registered_commands:
+    def has_registered_command(self, command_id: str) -> None:
+        return command_id in self.__registered_commands
+
+    def registerCommand(self, command_id: str, callback: CommandCallback, param_types: list[str] = None):
+        if self.has_registered_command(command_id):
             raise CommandAlreadyRegisteredException
-        registered_command: RegisteredCommand = RegisteredCommand(command_id, callback, paramTypes)
+        registered_command: RegisteredCommand = RegisteredCommand(command_id, callback, param_types)
         self.__registered_commands[command_id] = registered_command
 
     def unregisterCommand(self, command_id: str):
-        if command_id in self.__registered_commands:
-            command: RegisteredCommand = self.__registered_commands[command_id]
-            command.dispose()
-            del self.__registered_commands[command_id]
+        if not self.has_registered_command(command_id):
+            raise CommandIsNotRegisteredException
+        command: RegisteredCommand = self.__registered_commands[command_id]
+        command.dispose()
+        del self.__registered_commands[command_id]
 
     def write_command(self, command_id: str, params: list[CommandParam] = None) -> None:
         command_id_byte: bytes = self.__param_type_instances.get(ParamTypeChar.NAME).get_buffer(command_id)
