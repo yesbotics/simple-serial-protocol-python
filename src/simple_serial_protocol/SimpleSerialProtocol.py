@@ -6,7 +6,7 @@ from typing import Any, Final, overload
 from simple_serial_protocol.Baudrate import Baudrate
 from simple_serial_protocol.ParamsParser import ParamsParser
 from simple_serial_protocol.RegisteredCommand import RegisteredCommand
-from simple_serial_protocol.common import Byte, CommandCallback
+from simple_serial_protocol.common import Byte, CommandCallback, ErrorCallback
 from simple_serial_protocol.exception import CommandAlreadyRegisteredException, CommandIsNotRegisteredException, \
     EotWasNotReadException, \
     ParamTypeIsAlreadyRegisteredException, \
@@ -39,18 +39,28 @@ class SimpleSerialProtocol:
     __CHAR_EOT: Final[Byte] = 0x0A  # End of Transmission - Line Feed Zeichen \n
 
     @overload
-    def __init__(self, portname: str, baudrate: Baudrate):
+    def __init__(self, portname: str, baudrate: Baudrate, error_cb: ErrorCallback | None = None) -> None:
         pass
 
     @overload
-    def __init__(self, serial_port_instance: AbstractSerialPort):
+    def __init__(self, serial_port_instance: AbstractSerialPort, error_cb: ErrorCallback | None = None):
         pass
 
-    def __init__(self, portname_or_serial_port_instance: str | AbstractSerialPort, baudrate: Baudrate | None = None):
+    def __init__(
+            self,
+            portname_or_serial_port_instance: str | AbstractSerialPort,
+            baudrate_or_error_cb: ErrorCallback | Baudrate | None = None,
+            error_cb: ErrorCallback | None = None
+    ):
         self.__serial_port: Final[AbstractSerialPort] = (
             portname_or_serial_port_instance
             if isinstance(portname_or_serial_port_instance, AbstractSerialPort)
-            else PySerialSerialPort(str(portname_or_serial_port_instance), baudrate)
+            else PySerialSerialPort(str(portname_or_serial_port_instance), baudrate_or_error_cb)
+        )
+        self.__error_cb: ErrorCallback | None = (
+            error_cb_or_baudrate
+            if isinstance(portname_or_serial_port_instance, AbstractSerialPort)
+            else error_cb
         )
         self.__is_initialized: bool = False
         self.__listener_thread: Thread | None = None
@@ -81,6 +91,7 @@ class SimpleSerialProtocol:
         self.__stop_event = None
         self.__listener_thread = None
         self.__registered_commands.clear()
+        self.__error_cb = None
 
     def has_registered_command(self, command_id: str) -> None:
         return command_id in self.__registered_commands
