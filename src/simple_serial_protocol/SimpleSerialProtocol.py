@@ -115,9 +115,10 @@ class SimpleSerialProtocol:
         self.__write(eot_byte)
 
     def __add_param_type(self, name: str, clazz: any) -> None:
-        if ParamsParser.has_type(name):
-            raise ParamTypeIsAlreadyRegisteredException
-        ParamsParser.add_type(name, clazz)
+        # if ParamsParser.has_type(name):
+        #     raise ParamTypeIsAlreadyRegisteredException
+        if not ParamsParser.has_type(name):
+            ParamsParser.add_type(name, clazz)
         self.__param_type_instances[name] = clazz()
 
     def __serial_listener(self):
