@@ -133,24 +133,24 @@ class SimpleSerialProtocol:
         self.__param_type_instances[name] = clazz()
 
     def __serial_listener(self) -> None:
-        while not self.__stop_event.is_set():
-            try:
-                if not self.__is_initialized:
-                    self.__serial_port.flush()
-                    continue
-                if self.__serial_port.available() > 0:
-                    byte: Byte = self.__serial_port.read()
-                    self.__on_data(byte)
-            except OSError as e:
-                print('SimpleSerialException', e)
-                self.__is_initialized = False
-                self.__stop_event.set()
-                self.__stop_event = None
-                self.__listener_thread = None
-                self.__registered_commands.clear()
-                if self.__error_cb is not None:
-                    self.__error_cb(e)
-                self.__error_cb = None
+        try:
+            while not self.__stop_event.is_set():
+                    if not self.__is_initialized:
+                        self.__serial_port.flush()
+                        continue
+                    if self.__serial_port.available() > 0:
+                        byte: Byte = self.__serial_port.read()
+                        self.__on_data(byte)
+        except OSError as e:
+            print('SimpleSerialException', e)
+            self.__is_initialized = False
+            self.__stop_event.set()
+            self.__stop_event = None
+            self.__listener_thread = None
+            self.__registered_commands.clear()
+            if self.__error_cb is not None:
+                self.__error_cb(e)
+            self.__error_cb = None
 
     def __write(self, buffer: bytes) -> None:
         self.__serial_port.write(buffer)
