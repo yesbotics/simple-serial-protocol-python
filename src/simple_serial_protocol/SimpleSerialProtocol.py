@@ -86,6 +86,8 @@ class SimpleSerialProtocol:
         self._serial_port.close()
         self._stop_event = None
         self._listener_thread = None
+        for key,item in self._registered_commands.items():
+            item.dispose()
         self._registered_commands.clear()
         self._error_cb = None
 
@@ -131,12 +133,12 @@ class SimpleSerialProtocol:
     def _serial_listener(self) -> None:
         try:
             while not self._stop_event.is_set():
-                    if not self._is_initialized:
-                        self._serial_port.flush()
-                        continue
-                    if self._serial_port.available() > 0:
-                        byte: Byte = self._serial_port.read()
-                        self._on_data(byte)
+                if not self._is_initialized:
+                    self._serial_port.flush()
+                    continue
+                if self._serial_port.available() > 0:
+                    byte: Byte = self._serial_port.read()
+                    self._on_data(byte)
         except OSError as e:
             print('SimpleSerialException', e)
             self._is_initialized = False
