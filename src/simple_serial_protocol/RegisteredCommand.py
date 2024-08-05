@@ -6,14 +6,14 @@ from simple_serial_protocol.common import Byte, CommandCallback
 
 class RegisteredCommand:
     def __init__(self, command_id: str, callback: CommandCallback, param_types: list[str] = None):
-        self.__command_id: Final[str] = command_id
-        self.__callback: CommandCallback = callback
+        self._command_id: Final[str] = command_id
+        self._callback: CommandCallback = callback
         self._params_parser: ParamsParser | None = None
         if param_types is not None and len(param_types) > 0:
             self._params_parser = ParamsParser(param_types)
 
     def dispose(self) -> None:
-        self.__callback = None
+        self._callback = None
         if self._params_parser:
             self._params_parser.dispose()
 
@@ -30,6 +30,6 @@ class RegisteredCommand:
 
     def call_callback(self) -> None:
         if self._params_parser:
-            self.__callback(*self._params_parser.get_data())
+            self._callback(*self._params_parser.get_data())
         else:
-            self.__callback()
+            self._callback()

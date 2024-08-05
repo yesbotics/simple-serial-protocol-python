@@ -167,8 +167,7 @@ class SimpleSerialProtocol:
         self._add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
 
     def _on_data(self, byte: Byte) -> None:
-        print(self._registered_commands)
-        print('_on_data', byte)
+        # print('_on_data', byte)
         if self._current_command is not None:
             # Got command already -> reading param data
             if self._current_command.params_read():
