@@ -52,142 +52,139 @@ class SimpleSerialProtocol:
             baudrate_or_error_cb: ErrorCallback | Baudrate | None = None,
             error_cb: ErrorCallback | None = None
     ):
-        self.__serial_port: Final[AbstractSerialPort] = (
+        self._serial_port: Final[AbstractSerialPort] = (
             portname_or_serial_port_instance
             if isinstance(portname_or_serial_port_instance, AbstractSerialPort)
             else PySerialSerialPort(str(portname_or_serial_port_instance), baudrate_or_error_cb)
         )
-        self.__error_cb: ErrorCallback | None = (
-            error_cb_or_baudrate
-            if isinstance(portname_or_serial_port_instance, AbstractSerialPort)
-            else error_cb
-        )
-        self.__is_initialized: bool = False
-        self.__listener_thread: Thread | None = None
-        self.__stop_event: Event | None = None
-        self.__registered_commands: Final[dict[str, RegisteredCommand]] = {}
-        self.__current_command: RegisteredCommand | None = None
-        self.__param_type_instances: Final[dict[str, ParamType[Any]]] = {}
-        self.__init_param_types()
+        self._error_cb: ErrorCallback | None = error_cb
+        self._is_initialized: bool = False
+        self._listener_thread: Thread | None = None
+        self._stop_event: Event | None = None
+        self._registered_commands: Final[dict[str, RegisteredCommand]] = {}
+        self._current_command: RegisteredCommand | None = None
+        self._param_type_instances: Final[dict[str, ParamType[Any]]] = {}
+        self._init_param_types()
 
     @property
     def is_open(self) -> bool:
-        return self.__serial_port.is_open
+        return self._serial_port.is_open
 
     def init(self, initilizationDelay: float = 2.5):
-        self.__serial_port.open()
-        self.__stop_event = Event()
-        self.__listener_thread = Thread(target=self.__serial_listener)
-        self.__listener_thread.start()
+        self._serial_port.open()
+        self._stop_event = Event()
+        self._listener_thread = Thread(target=self._serial_listener)
+        self._listener_thread.start()
         # TODO: make it non blocking
         sleep(initilizationDelay)
-        self.__is_initialized = True
+        self._is_initialized = True
 
     def dispose(self):
-        self.__is_initialized = False
-        self.__stop_event.set()
-        self.__listener_thread.join()
-        self.__serial_port.close()
-        self.__stop_event = None
-        self.__listener_thread = None
-        self.__registered_commands.clear()
-        self.__error_cb = None
+        self._is_initialized = False
+        self._stop_event.set()
+        self._listener_thread.join()
+        self._serial_port.close()
+        self._stop_event = None
+        self._listener_thread = None
+        self._registered_commands.clear()
+        self._error_cb = None
 
-    def has_registered_command(self, command_id: str) -> None:
-        return command_id in self.__registered_commands
+    def has_registered_command(self, command_id: str) -> bool:
+        return command_id in self._registered_commands
 
-    def registerCommand(self, command_id: str, callback: CommandCallback, param_types: list[str] = None):
+    def register_command(self, command_id: str, callback: CommandCallback, param_types: list[str] = None):
         if self.has_registered_command(command_id):
             raise CommandAlreadyRegisteredException
         registered_command: RegisteredCommand = RegisteredCommand(command_id, callback, param_types)
-        self.__registered_commands[command_id] = registered_command
+        self._registered_commands[command_id] = registered_command
 
-    def unregisterCommand(self, command_id: str):
+    def unregister_command(self, command_id: str):
         if not self.has_registered_command(command_id):
             raise CommandIsNotRegisteredException
-        command: RegisteredCommand = self.__registered_commands[command_id]
+        command: RegisteredCommand = self._registered_commands[command_id]
         command.dispose()
-        del self.__registered_commands[command_id]
+        del self._registered_commands[command_id]
 
     def write_command(self, command_id: str, params: list[CommandParam] = None) -> None:
-        command_id_byte: bytes = self.__param_type_instances.get(ParamTypeChar.NAME).get_buffer(command_id)
-        self.__write(command_id_byte)
+        command_id_byte: bytes = self._param_type_instances.get(ParamTypeChar.NAME).get_buffer(command_id)
+        self._write(command_id_byte)
         if params is not None:
             for param in params:
                 if ParamsParser.has_type(param.type):
-                    typeClassInstance: ParamType[Any] = self.__param_type_instances.get(param.type)
+                    typeClassInstance: ParamType[Any] = self._param_type_instances.get(param.type)
                     buffer: bytes = typeClassInstance.get_buffer(param.value)
-                    self.__write(buffer)
+                    self._write(buffer)
                 else:
                     raise ParamTypeUnknownException
-        eot_byte: bytes = self.__param_type_instances.get(ParamTypeInt8.NAME).get_buffer(
+        eot_byte: bytes = self._param_type_instances.get(ParamTypeInt8.NAME).get_buffer(
             SimpleSerialProtocol.__CHAR_EOT
         )
-        self.__write(eot_byte)
+        self._write(eot_byte)
 
-    def __add_param_type(self, name: str, clazz: any) -> None:
+    def _add_param_type(self, name: str, clazz: any) -> None:
         # if ParamsParser.has_type(name):
         #     raise ParamTypeIsAlreadyRegisteredException
         if not ParamsParser.has_type(name):
             ParamsParser.add_type(name, clazz)
-        self.__param_type_instances[name] = clazz()
+        self._param_type_instances[name] = clazz()
 
-    def __serial_listener(self) -> None:
+    def _serial_listener(self) -> None:
         try:
-            while not self.__stop_event.is_set():
-                    if not self.__is_initialized:
-                        self.__serial_port.flush()
+            while not self._stop_event.is_set():
+                    if not self._is_initialized:
+                        self._serial_port.flush()
                         continue
-                    if self.__serial_port.available() > 0:
-                        byte: Byte = self.__serial_port.read()
-                        self.__on_data(byte)
+                    if self._serial_port.available() > 0:
+                        byte: Byte = self._serial_port.read()
+                        self._on_data(byte)
         except OSError as e:
             print('SimpleSerialException', e)
-            self.__is_initialized = False
-            self.__stop_event.set()
-            self.__stop_event = None
-            self.__listener_thread = None
-            self.__registered_commands.clear()
-            if self.__error_cb is not None:
-                self.__error_cb(e)
-            self.__error_cb = None
+            self._is_initialized = False
+            self._stop_event.set()
+            self._stop_event = None
+            self._listener_thread = None
+            self._registered_commands.clear()
+            if self._error_cb is not None:
+                self._error_cb(e)
+            self._error_cb = None
 
-    def __write(self, buffer: bytes) -> None:
-        self.__serial_port.write(buffer)
+    def _write(self, buffer: bytes) -> None:
+        self._serial_port.write(buffer)
 
-    def __init_param_types(self) -> None:
-        self.__add_param_type(ParamTypeByte.NAME, ParamTypeByte)
-        self.__add_param_type(ParamTypeBoolean.NAME, ParamTypeBoolean)
-        self.__add_param_type(ParamTypeChar.NAME, ParamTypeChar)
-        self.__add_param_type(ParamTypeString.NAME, ParamTypeString)
-        self.__add_param_type(ParamTypeFloat.NAME, ParamTypeFloat)
-        self.__add_param_type(ParamTypeInt8.NAME, ParamTypeInt8)
-        self.__add_param_type(ParamTypeInt16.NAME, ParamTypeInt16)
-        self.__add_param_type(ParamTypeInt32.NAME, ParamTypeInt32)
-        self.__add_param_type(ParamTypeInt64.NAME, ParamTypeInt64)
-        self.__add_param_type(ParamTypeUnsignedInt8.NAME, ParamTypeUnsignedInt8)
-        self.__add_param_type(ParamTypeUnsignedInt16.NAME, ParamTypeUnsignedInt16)
-        self.__add_param_type(ParamTypeUnsignedInt32.NAME, ParamTypeUnsignedInt32)
-        self.__add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
+    def _init_param_types(self) -> None:
+        self._add_param_type(ParamTypeByte.NAME, ParamTypeByte)
+        self._add_param_type(ParamTypeBoolean.NAME, ParamTypeBoolean)
+        self._add_param_type(ParamTypeChar.NAME, ParamTypeChar)
+        self._add_param_type(ParamTypeString.NAME, ParamTypeString)
+        self._add_param_type(ParamTypeFloat.NAME, ParamTypeFloat)
+        self._add_param_type(ParamTypeInt8.NAME, ParamTypeInt8)
+        self._add_param_type(ParamTypeInt16.NAME, ParamTypeInt16)
+        self._add_param_type(ParamTypeInt32.NAME, ParamTypeInt32)
+        self._add_param_type(ParamTypeInt64.NAME, ParamTypeInt64)
+        self._add_param_type(ParamTypeUnsignedInt8.NAME, ParamTypeUnsignedInt8)
+        self._add_param_type(ParamTypeUnsignedInt16.NAME, ParamTypeUnsignedInt16)
+        self._add_param_type(ParamTypeUnsignedInt32.NAME, ParamTypeUnsignedInt32)
+        self._add_param_type(ParamTypeUnsignedInt64.NAME, ParamTypeUnsignedInt64)
 
-    def __on_data(self, byte: Byte) -> None:
-        # print('__on_data', byte)
-        if self.__current_command is not None:
+    def _on_data(self, byte: Byte) -> None:
+        print(self._registered_commands)
+        print('_on_data', byte)
+        if self._current_command is not None:
             # Got command already -> reading param data
-            if self.__current_command.params_read():
+            if self._current_command.params_read():
                 # Check EOT -> call callback
                 if byte == SimpleSerialProtocol.__CHAR_EOT:
-                    self.__current_command.call_callback()
-                    self.__current_command = None
+                    self._current_command.call_callback()
+                    self._current_command = None
                 else:
                     raise EotWasNotReadException
             else:
-                self.__current_command.add_byte(byte)
+                self._current_command.add_byte(byte)
         else:
             command_name: str = chr(byte)
-            if command_name not in self.__registered_commands:
+            if command_name not in self._registered_commands:
                 # Command not found
                 raise CommandIsNotRegisteredException(command_name)
             # New command -> Preparing buffer for reading
-            self.__current_command = self.__registered_commands[command_name]
-            self.__current_command.reset_param_parser()
+            self._current_command = self._registered_commands[command_name]
+            self._current_command.reset_param_parser()

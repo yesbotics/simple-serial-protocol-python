@@ -28,7 +28,7 @@ class Example:
         self.is_running: bool = True
 
     def run(self):
-        self.arduino.registerCommand(
+        self.arduino.register_command(
             's',
             self.on_got_command,
             [
