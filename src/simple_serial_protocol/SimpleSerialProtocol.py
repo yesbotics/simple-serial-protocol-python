@@ -75,20 +75,22 @@ class SimpleSerialProtocol:
         self._stop_event = Event()
         self._listener_thread = Thread(target=self._serial_listener)
         self._listener_thread.start()
-        # TODO: make it non blocking
+        # TODO: make it non blocking?
         sleep(initilizationDelay)
         self._is_initialized = True
 
     def dispose(self):
         self._is_initialized = False
-        self._stop_event.set()
-        self._listener_thread.join()
+        if self._stop_event is not None:
+            self._stop_event.set()
+        if self._listener_thread is not None:
+            self._listener_thread.join()
         self._serial_port.close()
-        self._stop_event = None
-        self._listener_thread = None
-        for key,item in self._registered_commands.items():
+        for key, item in self._registered_commands.items():
             item.dispose()
         self._registered_commands.clear()
+        self._stop_event = None
+        self._listener_thread = None
         self._error_cb = None
 
     def has_registered_command(self, command_id: str) -> bool:
@@ -140,7 +142,7 @@ class SimpleSerialProtocol:
                     byte: Byte = self._serial_port.read()
                     self._on_data(byte)
         except OSError as e:
-            print('SimpleSerialException', e)
+            # print('SimpleSerialException', e)
             self._is_initialized = False
             self._stop_event.set()
             self._stop_event = None
@@ -151,6 +153,7 @@ class SimpleSerialProtocol:
             self._error_cb = None
 
     def _write(self, buffer: bytes) -> None:
+        # print("_write:", buffer)
         self._serial_port.write(buffer)
 
     def _init_param_types(self) -> None:
