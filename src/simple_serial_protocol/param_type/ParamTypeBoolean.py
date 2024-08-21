@@ -25,7 +25,7 @@ class ParamTypeBoolean(ParamType[bool]):
     def add_byte(self, byte: Byte) -> None:
         if self.is_full():
             return
-        self._raw_data.append(byte)
+        self._raw_data[self._index] = byte
         self._index += 1
 
     def is_full(self) -> bool:
